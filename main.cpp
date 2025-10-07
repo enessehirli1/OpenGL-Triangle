@@ -4,23 +4,27 @@
 
 const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
+"out vec4 vertexColor;"
 "void main()\n"
 "{\n"
 "	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"	vertexColor = vec4(0.5, 0.0, 0.0, 1.0);"
 "}\0";
 
 const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;"
+"in vec4 vertexColor;"
 "void main()\n"
 "{\n"
-"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"	FragColor = vertexColor;\n"
 "}\0";
 
 const char* fragmentShaderSource2 = "#version 330 core\n"
 "out vec4 FragColor;"
+"uniform vec4 ourColor;"
 "void main()\n"
 "{\n"
-"	FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);\n"
+"	FragColor = ourColor;\n"
 "}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -154,11 +158,11 @@ int main()
 	// ------------------------------------------------------------------
 	float vertices[] = {
 		// first triangle
-		-0.9f, -0.5f, 0.0f,  // left 
+		-0.9f, -0.5f, 0.0f,   // left 
 		-0.0f, -0.5f, 0.0f,  // right
 		-0.45f, 0.5f, 0.0f,  // top 
 		// second triangle
-		 0.0f, -0.5f, 0.0f,  // left
+		 0.0f, -0.5f, 0.0f,   // left
 		 0.9f, -0.5f, 0.0f,  // right
 		 0.45f, 0.5f, 0.0f   // top 
 	};
@@ -200,6 +204,12 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glUseProgram(shaderProgram2);
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram2, "ourColor");
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+
 		glBindVertexArray(VAOs[1]);
 		glDrawArrays(GL_TRIANGLES, 3, 6);
 
@@ -215,6 +225,5 @@ int main()
 	glDeleteProgram(shaderProgram2);
 
 	glfwTerminate();
-
 	return 0;
 }
